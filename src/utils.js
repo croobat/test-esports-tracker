@@ -12,13 +12,11 @@ export function generateEvent() {
   } while (target === player);
 
   const event = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-  const gold = event === "kill" ? 10 : event === "tower_destroyed" ? 20 : 0;
 
   return {
     time: new Date().toLocaleTimeString(),
     player,
     target,
     event,
-    gold,
   };
 }
