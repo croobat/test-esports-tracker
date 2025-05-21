@@ -4,7 +4,13 @@ const eventTypes = ["kill", "death", "tower_destroyed"];
 
 export function generateEvent() {
   const player = players[Math.floor(Math.random() * players.length)];
-  const target = players[Math.floor(Math.random() * players.length)];
+  let target;
+
+  // Avoid self-targeting
+  do {
+    target = players[Math.floor(Math.random() * players.length)];
+  } while (target === player);
+
   const event = eventTypes[Math.floor(Math.random() * eventTypes.length)];
   const gold = event === "kill" ? 10 : event === "tower_destroyed" ? 20 : 0;
 

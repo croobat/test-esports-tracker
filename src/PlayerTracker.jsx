@@ -51,11 +51,11 @@ export default function PlayerTracker({ events }) {
 
     players.forEach((player) => {
       const playerKills = events.filter(
-        (event) => event.player === player && event.event === "death",
+        (event) => event.player === player && event.event === "kill",
       );
 
       const playerDeaths = events.filter(
-        (event) => event.target === player && event.event === "death",
+        (event) => event.target === player && event.event === "kill",
       );
 
       const playerTowers = events.filter(
@@ -80,18 +80,23 @@ export default function PlayerTracker({ events }) {
         deaths: playerDeaths.length,
         towersDestroyed: playerTowers.length,
         netWorth: playerGold,
-        kda,
+        kda: parseFloat(kda),
       };
     });
 
     setPlayerStats(updatedStats);
   }, [events]);
 
+  // Find player with highest KDA
+  const topKdaPlayer = Object.values(playerStats).reduce((prev, current) =>
+    prev.kda > current.kda ? prev : current,
+  );
+
   return (
     <div>
       <h2>🧍 Player Tracker</h2>
 
-      <table>
+      <table style={{ borderCollapse: "collapse", width: "100%" }}>
         <thead>
           <tr>
             <th>Player</th>
@@ -102,20 +107,30 @@ export default function PlayerTracker({ events }) {
             <th>KDA</th>
           </tr>
         </thead>
-        {players.map((player) => {
-          const stats = playerStats[player];
+        <tbody>
+          {players.map((player) => {
+            const stats = playerStats[player];
+            const isTopKda = stats.name === topKdaPlayer.name;
 
-          return (
-            <tr key={player}>
-              <td>{stats.name}</td>
-              <td>{stats.kills}</td>
-              <td>{stats.deaths}</td>
-              <td>{stats.towersDestroyed}</td>
-              <td>{stats.netWorth}$</td>
-              <td>{stats.kda}</td>
-            </tr>
-          );
-        })}
+            return (
+              <tr
+                key={player}
+                style={{
+                  backgroundColor: isTopKda ? "papayawhip" : "transparent",
+                  color: isTopKda ? "black" : "inherit",
+                  fontWeight: isTopKda ? "bold" : "normal",
+                }}
+              >
+                <td>{stats.name}</td>
+                <td>{stats.kills}</td>
+                <td>{stats.deaths}</td>
+                <td>{stats.towersDestroyed}</td>
+                <td>{stats.netWorth}$</td>
+                <td>{stats.kda}</td>
+              </tr>
+            );
+          })}
+        </tbody>
       </table>
     </div>
   );
